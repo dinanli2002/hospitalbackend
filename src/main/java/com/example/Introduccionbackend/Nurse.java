@@ -7,10 +7,10 @@ public class Nurse {
 	private String username;
 	private String password;
 
-	public Nurse(int id, String name, String password) {
+	public Nurse(int id, String username, String password) {
 		super();
 		this.id = id;
-		this.name = name;
+		this.username = username;
 		this.password = password;
 	}
 
@@ -23,16 +23,9 @@ public class Nurse {
 	}
 
 	public String getUserame() {
-		return name;
+		return username;
 	}
 
-	public void setUsername(String name) {
-		this.name = name;
-	}
-
-	public String getPassword() {
-		return password;
-	}
 
 
 
