@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
+
+
 @RestController
 @RequestMapping("nurses")
 public class NurseController {
@@ -20,7 +23,21 @@ public class NurseController {
         nurseList.add(new Nurse("nurse2", "password2"));
     }
 	
-	@PostMapping("/login")
+	@GetMapping("/name/{name}")
+	private ResponseEntity<Nurse> findByName(@PathVariable String name){
+		
+		for (Nurse nurse : nurseList) {
+			System.out.println(nurse);
+			if (name.equals(nurse.getName())) {
+				return ResponseEntity.ok(nurse);
+						
+			}
+			
+		}
+		return ResponseEntity.notFound().build();
+	}
+  
+  @PostMapping("/login")
 	public ResponseEntity<Boolean> login(@RequestParam String username, @RequestParam String password) {
         for (Nurse nurse : nurseList) {
             if (nurse.getUsername().equals(username) && nurse.getPassword().equals(password)) {
@@ -29,5 +46,7 @@ public class NurseController {
         }
         return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
     }
+	
+	
 	
 }
