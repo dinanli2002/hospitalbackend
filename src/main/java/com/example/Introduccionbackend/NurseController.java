@@ -32,12 +32,7 @@ public class NurseController {
   
   @GetMapping("/all")
 	    public List<Nurse> getAllNurses() {
-	        
-	        Nurse nurse1 = new Nurse(0, "Dayanna Bonilla", "password123");
-	        Nurse nurse2 = new Nurse(1, "Daniel Rios", "password123"); 
-	        Nurse nurse3 = new Nurse(2, "Dinan", "password1");
-
-	        return Arrays.asList(nurse1, nurse2, nurse3);
+	        return nurseList;
 	   }
 	
 	@GetMapping("/name/{name}")
