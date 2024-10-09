@@ -1,11 +1,9 @@
 package com.example.Introduccionbackend;
 
-public class Nurse {
 
 
-	private int id;
-	private String username;
-	private String password;
+
+
 
 	public Nurse(int id, String username, String password) {
 		super();
