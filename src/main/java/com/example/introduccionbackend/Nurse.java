@@ -1,11 +1,9 @@
-package com.example.Introduccionbackend;
-
+package com.example.introduccionbackend;
 
 public class Nurse {
-private int id;
-private String username;
-private String password;
-
+	private int id;
+	private String username;
+	private String password;
 
 	public Nurse(int id, String username, String password) {
 		super();
@@ -22,22 +20,14 @@ private String password;
 		this.id = id;
 	}
 
-	public String getUserame() {
-		return username;
-	}
-
-
-
-
- 
-    
 	public String getUsername() {
 		return username;
 	}
-	
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public String getPassword() {
 		return password;
 	}
@@ -45,7 +35,5 @@ private String password;
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-
 
 }
