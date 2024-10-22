@@ -1,22 +1,30 @@
 package com.example.introduccionbackend;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Nurse {
-	private int id;
+	@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 	private String username;
 	private String password;
 
-	public Nurse(int id, String username, String password) {
+	/*public Nurse(int id, String username, String password) {
 		super();
 		this.id = id;
 		this.username = username;
 		this.password = password;
-	}
+	}*/
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
