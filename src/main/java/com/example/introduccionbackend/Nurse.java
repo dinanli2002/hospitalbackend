@@ -13,12 +13,6 @@ public class Nurse {
 	private String username;
 	private String password;
 
-	/*public Nurse(int id, String username, String password) {
-		super();
-		this.id = id;
-		this.username = username;
-		this.password = password;
-	}*/
 
 	public Integer getId() {
 		return id;
