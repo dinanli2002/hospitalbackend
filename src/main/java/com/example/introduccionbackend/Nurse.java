@@ -1,5 +1,7 @@
 package com.example.introduccionbackend;
 
+import javax.persistence.Column;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,7 +10,8 @@ import jakarta.persistence.Id;
 @Entity
 public class Nurse {
 	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique = true, nullable = true)
 	private Integer id;
 	private String username;
 	private String password;
