@@ -1,4 +1,4 @@
-package com.example.introduccionbackend;
+package com.example.hospital;
 
 import javax.persistence.Column;
 import jakarta.persistence.Entity;
