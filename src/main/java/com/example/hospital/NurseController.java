@@ -29,18 +29,32 @@ public class NurseController {
 		return nurseRepository.findByUsername(username);
 	}
 
-	@PostMapping("/login")
-	public @ResponseBody ResponseEntity<String> login(@RequestParam String username, @RequestParam String password){
+	@PostMapping("/create")
+	public @ResponseBody ResponseEntity<String> createNurse(@RequestParam String username, @RequestParam String password){
     Optional<Nurse> existingNurse = nurseRepository.findByUsernameAndPassword(username, password);
     if (existingNurse.isPresent()) {
-        return new ResponseEntity<>("Username and password already exist. Login failed.", HttpStatus.CONFLICT);
+        return new ResponseEntity<>("Username and password already exist. Create failed.", HttpStatus.CONFLICT);
     }
     Nurse newNurse = new Nurse();
     newNurse.setUsername(username);
     newNurse.setPassword(password);
     nurseRepository.save(newNurse);
-    return new ResponseEntity<>("Login successful", HttpStatus.OK);
+    return new ResponseEntity<>("Create nurse successful", HttpStatus.OK);
 	}
+	
+	@PostMapping("/login")
+	public @ResponseBody ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {	
+	    Optional<Nurse> existingNurse = nurseRepository.findByUsername(username);
+	    if (existingNurse.isEmpty()) {
+	        return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
+	    }
+	    if (existingNurse.get().getPassword().equals(password)) {
+	        return new ResponseEntity<>("Login successful", HttpStatus.OK);
+	    } else {
+	        return new ResponseEntity<>("Invalid password.", HttpStatus.UNAUTHORIZED);
+	    }
+	}
+
 
 	
 	@GetMapping("/all")
