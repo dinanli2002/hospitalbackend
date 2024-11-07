@@ -43,6 +43,26 @@ public class NurseController {
 		return new ResponseEntity<>("Create nurse successful", HttpStatus.OK);
 	}
 
+	@PostMapping("/update/{id}")
+	public @ResponseBody ResponseEntity<String> updateNurse(@RequestParam String username,
+			@RequestParam String password, @PathVariable("id") int id) {
+		
+		Optional<Nurse> existingNurse = nurseRepository.findById(id);
+		
+		if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+			return new ResponseEntity<>("Error with data sent", HttpStatus.BAD_REQUEST);
+		}
+		if (!existingNurse.isPresent()) {	
+			return new ResponseEntity<>("Username and password don't exist. Update failed.", HttpStatus.NOT_FOUND);
+		}
+		
+		
+		existingNurse.get().setUsername(username);
+		existingNurse.get().setPassword(password);
+		nurseRepository.save(existingNurse.get());
+		return new ResponseEntity<>("Update nurse successful", HttpStatus.OK);
+	}
+
 	@PostMapping("/login")
 	public @ResponseBody ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
 		Optional<Nurse> existingNurse = nurseRepository.findByUsername(username);
