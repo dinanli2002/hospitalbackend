@@ -58,8 +58,8 @@ public class NurseController {
 
 	
 	@GetMapping("/all")
-	public @ResponseBody Iterable<Nurse> getAll(){
-		return nurseRepository.findAll();
+	public @ResponseBody ResponseEntity<Iterable<Nurse>> getAll(){
+		return new ResponseEntity<Iterable<Nurse>>(nurseRepository.findAll(),HttpStatus.OK);
 	}
 }
 
