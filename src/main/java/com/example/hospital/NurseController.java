@@ -4,9 +4,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -43,7 +45,7 @@ public class NurseController {
 		return new ResponseEntity<>("Create nurse successful", HttpStatus.OK);
 	}
 
-	@PostMapping("/update/{id}")
+	@PutMapping("/update/{id}")
 	public @ResponseBody ResponseEntity<String> updateNurse(@RequestParam String username,
 			@RequestParam String password, @PathVariable("id") int id) {
 		
@@ -62,6 +64,19 @@ public class NurseController {
 		nurseRepository.save(existingNurse.get());
 		return new ResponseEntity<>("Update nurse successful", HttpStatus.OK);
 	}
+	
+	@DeleteMapping("/delete/{id}")
+	public @ResponseBody ResponseEntity<String> updateNurse(@PathVariable("id") int id) {
+		
+		Optional<Nurse> existingNurse = nurseRepository.findById(id);
+		
+		if (!existingNurse.isPresent()) {	
+			return new ResponseEntity<>("Nurse not found. Delete failed.", HttpStatus.NOT_FOUND);
+		}
+		nurseRepository.delete(existingNurse.get());
+		return new ResponseEntity<>("Delete nurse successful", HttpStatus.OK);
+	}
+	
 
 	@PostMapping("/login")
 	public @ResponseBody ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
