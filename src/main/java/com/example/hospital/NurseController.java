@@ -22,11 +22,20 @@ public class NurseController {
 	@Autowired
 	private NurseRepository nurseRepository;
 
-	@GetMapping("/username/{username}")
+	/*@GetMapping("/username/{username}")
 	public @ResponseBody Optional<Nurse> findByUsernme(@PathVariable("username") String username) {
 		// This returns a JSON or XML with the users
 		return nurseRepository.findByUsername(username);
+	}*/
+	@GetMapping("/find/{id}")
+	public @ResponseBody ResponseEntity<?> findNurseById(@PathVariable("id") int id) {
+	    Optional<Nurse> existingNurse = nurseRepository.findById(id); 
+	    if (!existingNurse.isPresent()) {    
+	        return new ResponseEntity<>("Nurse with the specified ID not found.", HttpStatus.NOT_FOUND);
+	    }
+	    return new ResponseEntity<>(existingNurse.get(), HttpStatus.OK);
 	}
+
 
 	@PostMapping("/create")
 	public @ResponseBody ResponseEntity<String> createNurse(@RequestParam String username,
