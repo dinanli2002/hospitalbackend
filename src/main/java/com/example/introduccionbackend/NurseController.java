@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional; 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
@@ -26,13 +28,18 @@ public class NurseController {
 	private NurseRepository nurseRepository;
 
 
-	@GetMapping("/username/{username}")
-	public @ResponseBody Optional<Nurse> findByUsernme(@PathVariable("username") String username ) {
-		// This returns a JSON or XML with the users
-		return nurseRepository.findByUsername(username);
-	}
+	//Error handling is missed, return status 404 not found in case no nurse found
+	//And RESPONSE ENTITY
 	
-}
+	@GetMapping("/username/{username}")
+	public ResponseEntity<Nurse> findByUsernme(@PathVariable("username") String username) {
+	    return nurseRepository.findByUsername(username)
+	            .map(nurse -> ResponseEntity.ok(nurse)) 
+	            .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)); 
+	}
+
+	
+
 
 	@PostMapping("/login")
 	public @ResponseBody ResponseEntity<String> login(@RequestParam String username, @RequestParam String password){
