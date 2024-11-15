@@ -22,20 +22,28 @@ public class NurseController {
 	@Autowired
 	private NurseRepository nurseRepository;
 
-	/*@GetMapping("/username/{username}")
-	public @ResponseBody Optional<Nurse> findByUsernme(@PathVariable("username") String username) {
-		// This returns a JSON or XML with the users
-		return nurseRepository.findByUsername(username);
-	}*/
-	@GetMapping("/find/{id}")
-	public @ResponseBody ResponseEntity<?> findNurseById(@PathVariable("id") int id) {
-	    Optional<Nurse> existingNurse = nurseRepository.findById(id); 
-	    if (!existingNurse.isPresent()) {    
-	        return new ResponseEntity<>("Nurse with the specified ID not found.", HttpStatus.NOT_FOUND);
-	    }
-	    return new ResponseEntity<>(existingNurse.get(), HttpStatus.OK);
+	@GetMapping("/username/{username}")
+
+	public @ResponseBody ResponseEntity<Nurse> findByUsername(@PathVariable("username") String username) {
+
+		Optional<Nurse> nurse = nurseRepository.findByUsername(username);
+		if (nurse.isPresent()) {
+			return ResponseEntity.ok(nurse.get());
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+
+		}
+
 	}
 
+	@GetMapping("/find/{id}")
+	public @ResponseBody ResponseEntity<?> findNurseById(@PathVariable("id") int id) {
+		Optional<Nurse> existingNurse = nurseRepository.findById(id);
+		if (!existingNurse.isPresent()) {
+			return new ResponseEntity<>("Nurse with the specified ID not found.", HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(existingNurse.get(), HttpStatus.OK);
+	}
 
 	@PostMapping("/create")
 	public @ResponseBody ResponseEntity<String> createNurse(@RequestParam String username,
@@ -57,35 +65,28 @@ public class NurseController {
 	@PutMapping("/update/{id}")
 	public @ResponseBody ResponseEntity<String> updateNurse(@RequestParam String username,
 			@RequestParam String password, @PathVariable("id") int id) {
-		
 		Optional<Nurse> existingNurse = nurseRepository.findById(id);
-		
 		if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
 			return new ResponseEntity<>("Error with data sent", HttpStatus.BAD_REQUEST);
 		}
-		if (!existingNurse.isPresent()) {	
+		if (!existingNurse.isPresent()) {
 			return new ResponseEntity<>("Username and password don't exist. Update failed.", HttpStatus.NOT_FOUND);
 		}
-		
-		
 		existingNurse.get().setUsername(username);
 		existingNurse.get().setPassword(password);
 		nurseRepository.save(existingNurse.get());
 		return new ResponseEntity<>("Update nurse successful", HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/delete/{id}")
 	public @ResponseBody ResponseEntity<String> updateNurse(@PathVariable("id") int id) {
-		
 		Optional<Nurse> existingNurse = nurseRepository.findById(id);
-		
-		if (!existingNurse.isPresent()) {	
+		if (!existingNurse.isPresent()) {
 			return new ResponseEntity<>("Nurse not found. Delete failed.", HttpStatus.NOT_FOUND);
 		}
 		nurseRepository.delete(existingNurse.get());
 		return new ResponseEntity<>("Delete nurse successful", HttpStatus.OK);
 	}
-	
 
 	@PostMapping("/login")
 	public @ResponseBody ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
@@ -101,7 +102,7 @@ public class NurseController {
 	}
 
 	@GetMapping("/all")
-	public @ResponseBody ResponseEntity<Iterable<Nurse>> getAll(){
-		return new ResponseEntity<Iterable<Nurse>>(nurseRepository.findAll(),HttpStatus.OK);
+	public @ResponseBody ResponseEntity<Iterable<Nurse>> getAll() {
+		return new ResponseEntity<Iterable<Nurse>>(nurseRepository.findAll(), HttpStatus.OK);
 	}
 }
