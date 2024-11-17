@@ -75,7 +75,7 @@ public class NurseController {
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public @ResponseBody ResponseEntity<String> updateNurse(@PathVariable("id") int id) {
+	public @ResponseBody ResponseEntity<String> deleteNurse(@PathVariable("id") int id) {
 		Optional<Nurse> existingNurse = nurseRepository.findById(id);
 		if (!existingNurse.isPresent()) {
 			return new ResponseEntity<>("Nurse not found. Delete failed.", HttpStatus.NOT_FOUND);
