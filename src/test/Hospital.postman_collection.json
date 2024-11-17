@@ -1,0 +1,190 @@
+{
+	"info": {
+		"_postman_id": "90bd448a-defa-40d3-8219-5c422da9ea09",
+		"name": "Hospital",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38872776"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "nurse50",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "dani2",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/nurses/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nurses",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAll",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/nurses/all",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nurses",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FindUsername",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/nurses/all",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nurses",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "nurse5",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "dani2",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/nurses/create",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nurses",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/nurses/all",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nurses",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "nurse12",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "dani2",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/nurses/update/5",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nurses",
+						"update",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/nurses/delete/4",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"nurses",
+						"delete",
+						"4"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
