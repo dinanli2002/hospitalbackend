@@ -41,7 +41,7 @@ class NurseControllerTest {
 		nurse.setId(1);
 		nurse.setUsername("nurse1");
 		nurse.setPassword("password1");
-		when(nurseRepository.findByUsername("nurse")).thenReturn(Optional.of(nurse));
+		when(nurseRepository.findByUsername("nurse1")).thenReturn(Optional.of(nurse));
 		mockMvc.perform(get("/nurses/username/nurse1")).andExpect(status().isOk())
 				.andExpect(jsonPath("$.username").value("nurse1"));
 	}
