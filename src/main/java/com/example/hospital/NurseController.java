@@ -23,17 +23,13 @@ public class NurseController {
 	private NurseRepository nurseRepository;
 
 	@GetMapping("/username/{username}")
-
 	public @ResponseBody ResponseEntity<Nurse> findByUsername(@PathVariable("username") String username) {
-
 		Optional<Nurse> nurse = nurseRepository.findByUsername(username);
 		if (nurse.isPresent()) {
 			return ResponseEntity.ok(nurse.get());
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-
 		}
-
 	}
 
 	@GetMapping("/find/{id}")
@@ -105,4 +101,5 @@ public class NurseController {
 	public @ResponseBody ResponseEntity<Iterable<Nurse>> getAll() {
 		return new ResponseEntity<Iterable<Nurse>>(nurseRepository.findAll(), HttpStatus.OK);
 	}
+
 }

@@ -1,139 +1,204 @@
 package com.example.hospitalbackend;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.Arrays;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import com.example.hospital.HospitalApplication;
 import com.example.hospital.Nurse;
-import com.example.hospital.NurseController;
 import com.example.hospital.NurseRepository;
 
-public class NurseControllerTest {
+@SpringBootTest(classes = { HospitalApplication.class })
+class NurseControllerTest {
 
-	@Mock
+	@Autowired
+	private WebApplicationContext webApplicationContext;
+	private MockMvc mockMvc;
+
+	@MockBean
 	private NurseRepository nurseRepository;
 
-	@InjectMocks
-	private NurseController nurseController;
-
 	@BeforeEach
-	public void setUp() {
+	void setup() {
 		MockitoAnnotations.openMocks(this);
+		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 	}
 
 	@Test
-	public void testFindNurseById_Success() {
+	void testFindByUsername_Success() throws Exception {
 		Nurse nurse = new Nurse();
 		nurse.setId(1);
-		nurse.setUsername("testUser");
-		nurse.setPassword("testPassword");
-		when(nurseRepository.findById(1)).thenReturn(Optional.of(nurse));
-		ResponseEntity<?> response = nurseController.findNurseById(1);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(nurse, response.getBody());
+		nurse.setUsername("nurse1");
+		nurse.setPassword("password1");
+		when(nurseRepository.findByUsername("nurse1")).thenReturn(Optional.of(nurse));
+		mockMvc.perform(get("/nurses/username/nurse1")).andExpect(status().isOk())
+				.andExpect(jsonPath("$.username").value("nurse1"));
 	}
 
 	@Test
-    public void testFindNurseById_NotFound() {
-        when(nurseRepository.findById(1)).thenReturn(Optional.empty());
-        ResponseEntity<?> response = nurseController.findNurseById(1);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Nurse with the specified ID not found.", response.getBody());
+    void testFindByUsername_NotFound() throws Exception {
+        when(nurseRepository.findByUsername("nurse1")).thenReturn(Optional.empty());
+        mockMvc.perform(get("/nurses/username/nurse1"))
+                .andExpect(status().isNotFound());
     }
 
 	@Test
-    public void testCreateNurse_Success() {
-        when(nurseRepository.findByUsernameAndPassword("newUser", "newPass")).thenReturn(Optional.empty());
-        ResponseEntity<String> response = nurseController.createNurse("newUser", "newPass");
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Create nurse successful", response.getBody());
-        verify(nurseRepository, times(1)).save(any(Nurse.class));
-    }
-
-	@Test
-	public void testCreateNurse_Conflict() {
-		Nurse existingNurse = new Nurse();
-		when(nurseRepository.findByUsernameAndPassword("existingUser", "existingPass"))
-				.thenReturn(Optional.of(existingNurse));
-		ResponseEntity<String> response = nurseController.createNurse("existingUser", "existingPass");
-		assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-		assertEquals("Username and password already exist. Create failed.", response.getBody());
-	}
-
-	@Test
-	public void testUpdateNurse_Success() {
+	void testFindById_Success() throws Exception {
 		Nurse nurse = new Nurse();
 		nurse.setId(1);
-		nurse.setUsername("oldUser");
-		nurse.setPassword("oldPass");
+		nurse.setUsername("nurse1");
+		nurse.setPassword("password1");
 		when(nurseRepository.findById(1)).thenReturn(Optional.of(nurse));
-		ResponseEntity<String> response = nurseController.updateNurse("newUser", "newPass", 1);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals("Update nurse successful", response.getBody());
-		verify(nurseRepository, times(1)).save(any(Nurse.class));
+		mockMvc.perform(get("/nurses/find/1")).andExpect(status().isOk()).andExpect(jsonPath("$.id").value(1));
 	}
 
 	@Test
-    public void testUpdateNurse_NotFound() {
+    void testFindById_NotFound() throws Exception {
         when(nurseRepository.findById(1)).thenReturn(Optional.empty());
-        ResponseEntity<String> response = nurseController.updateNurse("newUser", "newPass", 1);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Username and password don't exist. Update failed.", response.getBody());
+        mockMvc.perform(get("/nurses/find/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Nurse with the specified ID not found."));
     }
 
 	@Test
-	public void testDeleteNurse_Success() {
+    void testCreateNurse_Success() throws Exception {
+        when(nurseRepository.findByUsernameAndPassword("nurse1", "password1")).thenReturn(Optional.empty());
+        mockMvc.perform(post("/nurses/create")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("username", "nurse1")
+                .param("password", "password1"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Create nurse successful"));
+    }
+
+	@Test
+	void testCreateNurse_Conflict() throws Exception {
 		Nurse nurse = new Nurse();
 		nurse.setId(1);
+		nurse.setUsername("nurse1");
+		nurse.setPassword("password1");
+		when(nurseRepository.findByUsernameAndPassword("nurse1", "password1")).thenReturn(Optional.of(nurse));
+		mockMvc.perform(post("/nurses/create").contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("username", "nurse1").param("password", "password1")).andExpect(status().isConflict())
+				.andExpect(content().string("Username and password already exist. Create failed."));
+	}
+
+	@Test
+	void testCreateNurse_BadRequest() throws Exception {
+		mockMvc.perform(post("/nurses/create").contentType(MediaType.APPLICATION_FORM_URLENCODED).param("username", "")
+				.param("password", "")).andExpect(status().isBadRequest())
+				.andExpect(content().string("Username and password cannot be empty."));
+	}
+
+	@Test
+	void testUpdateNurse_Success() throws Exception {
+		Nurse nurse = new Nurse();
+		nurse.setId(1);
+		nurse.setUsername("nurse1");
+		nurse.setPassword("password1");
 		when(nurseRepository.findById(1)).thenReturn(Optional.of(nurse));
-		ResponseEntity<String> response = nurseController.updateNurse(1);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals("Delete nurse successful", response.getBody());
-		verify(nurseRepository, times(1)).delete(nurse);
+		mockMvc.perform(put("/nurses/update/1").contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("username", "updatedNurse").param("password", "updatedPassword")).andExpect(status().isOk())
+				.andExpect(content().string("Update nurse successful"));
 	}
 
 	@Test
-    public void testDeleteNurse_NotFound() {
+    void testUpdateNurse_NotFound() throws Exception {
         when(nurseRepository.findById(1)).thenReturn(Optional.empty());
-        ResponseEntity<String> response = nurseController.updateNurse(1);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Nurse not found. Delete failed.", response.getBody());
+        mockMvc.perform(put("/nurses/update/1")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("username", "updatedNurse")
+                .param("password", "updatedPassword"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Username and password don't exist. Update failed."));
     }
 
 	@Test
-	public void testLogin_Success() {
-		Nurse nurse = new Nurse();
-		nurse.setUsername("user1");
-		nurse.setPassword("pass1");
-		when(nurseRepository.findByUsername("user1")).thenReturn(Optional.of(nurse));
-		ResponseEntity<String> response = nurseController.login("user1", "pass1");
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals("Login successful", response.getBody());
+	void testUpdateNurse_BadRequest() throws Exception {
+		mockMvc.perform(put("/nurses/update/1").contentType(MediaType.APPLICATION_FORM_URLENCODED).param("username", "")
+				.param("password", "")).andExpect(status().isBadRequest())
+				.andExpect(content().string("Error with data sent"));
 	}
 
 	@Test
-	public void testLogin_InvalidPassword() {
+	void testDeleteNurse_Success() throws Exception {
 		Nurse nurse = new Nurse();
-		nurse.setUsername("user1");
-		nurse.setPassword("correctPass");
-		when(nurseRepository.findByUsername("user1")).thenReturn(Optional.of(nurse));
-		ResponseEntity<String> response = nurseController.login("user1", "wrongPass");
-		assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-		assertEquals("Invalid password.", response.getBody());
+		nurse.setId(1);
+		nurse.setUsername("nurse1");
+		nurse.setPassword("password1");
+		when(nurseRepository.findById(1)).thenReturn(Optional.of(nurse));
+		mockMvc.perform(delete("/nurses/delete/1")).andExpect(status().isOk())
+				.andExpect(content().string("Delete nurse successful"));
 	}
 
 	@Test
-    public void testLogin_UserNotFound() {
-        when(nurseRepository.findByUsername("nonExistentUser")).thenReturn(Optional.empty());
-        ResponseEntity<String> response = nurseController.login("nonExistentUser", "anyPass");
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User not found.", response.getBody());
+    void testDeleteNurse_NotFound() throws Exception {
+        when(nurseRepository.findById(1)).thenReturn(Optional.empty());
+        mockMvc.perform(delete("/nurses/delete/1"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("Nurse not found. Delete failed."));
     }
+
+	@Test
+	void testLogin_Success() throws Exception {
+		Nurse nurse = new Nurse();
+		nurse.setId(1);
+		nurse.setUsername("nurse1");
+		nurse.setPassword("password1");
+		when(nurseRepository.findByUsername("nurse1")).thenReturn(Optional.of(nurse));
+		mockMvc.perform(post("/nurses/login").contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("username", "nurse1").param("password", "password1")).andExpect(status().isOk())
+				.andExpect(content().string("Login successful"));
+	}
+
+	@Test
+    void testLogin_UserNotFound() throws Exception {
+        when(nurseRepository.findByUsername("nurse1")).thenReturn(Optional.empty());
+        mockMvc.perform(post("/nurses/login")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("username", "nurse1")
+                .param("password", "password1"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("User not found."));
+    }
+
+	@Test
+	void testLogin_InvalidPassword() throws Exception {
+		Nurse nurse = new Nurse();
+		nurse.setId(1);
+		nurse.setUsername("nurse1");
+		nurse.setPassword("password1");
+		when(nurseRepository.findByUsername("nurse1")).thenReturn(Optional.of(nurse));
+		mockMvc.perform(post("/nurses/login").contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("username", "nurse1").param("password", "wrongPassword")).andExpect(status().isUnauthorized())
+				.andExpect(content().string("Invalid password."));
+	}
+
+	@Test
+	void testGetAllNurses() throws Exception {
+		Nurse nurse1 = new Nurse();
+		nurse1.setId(1);
+		nurse1.setUsername("nurse1");
+		nurse1.setPassword("password1");
+		Nurse nurse2 = new Nurse();
+		nurse2.setId(2);
+		nurse2.setUsername("nurse2");
+		nurse2.setPassword("password2");
+		when(nurseRepository.findAll()).thenReturn(Arrays.asList(nurse1, nurse2));
+		mockMvc.perform(get("/nurses/all")).andExpect(status().isOk())
+				.andExpect(jsonPath("$[0].username").value("nurse1"))
+				.andExpect(jsonPath("$[1].username").value("nurse2"));
+	}
+
 }
