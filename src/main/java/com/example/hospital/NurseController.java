@@ -85,13 +85,14 @@ public class NurseController {
 	}
 
 	@PostMapping("/login")
-	public @ResponseBody ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
+	public @ResponseBody ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
 		Optional<Nurse> existingNurse = nurseRepository.findByUsername(username);
 		if (existingNurse.isEmpty()) {
 			return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
 		}
-		if (existingNurse.get().getPassword().equals(password)) {
-			return new ResponseEntity<>("Login successful", HttpStatus.OK);
+		Nurse nurse = existingNurse.get();
+		if (nurse.getPassword().equals(password)) {
+			return new ResponseEntity<>(nurse, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>("Invalid password.", HttpStatus.UNAUTHORIZED);
 		}
